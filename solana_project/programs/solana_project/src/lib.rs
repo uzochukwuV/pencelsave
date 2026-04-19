@@ -34,6 +34,14 @@ pub mod solana_project {
         Ok(())
     }
 
+    pub fn initialize_router_vault(_ctx: Context<InitializeRouterVault>) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn initialize_lock_vault(_ctx: Context<InitializeLockVault>) -> Result<()> {
+        Ok(())
+    }
+
     pub fn update_profile(
         ctx: Context<UpdateProfile>,
         split_main_pct: u8,
@@ -296,9 +304,24 @@ pub struct InitializeProfile<'info> {
         seeds = [b"profile", owner.key().as_ref()],
         bump
     )]
-    pub profile: Box<Account<'info, UserProfile>>,
+    pub profile: Account<'info, UserProfile>,
     
-    pub usdc_mint: Box<Account<'info, Mint>>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeRouterVault<'info> {
+    #[account(mut)]
+    pub owner: Signer<'info>,
+
+    #[account(
+        seeds = [b"profile", owner.key().as_ref()],
+        bump = profile.bump,
+        has_one = owner @ RouterError::Unauthorized
+    )]
+    pub profile: Account<'info, UserProfile>,
+    
+    pub usdc_mint: Account<'info, Mint>,
 
     #[account(
         init,
@@ -308,7 +331,25 @@ pub struct InitializeProfile<'info> {
         seeds = [b"router_vault", profile.key().as_ref()],
         bump
     )]
-    pub router_vault: Box<Account<'info, TokenAccount>>,
+    pub router_vault: Account<'info, TokenAccount>,
+    
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeLockVault<'info> {
+    #[account(mut)]
+    pub owner: Signer<'info>,
+
+    #[account(
+        seeds = [b"profile", owner.key().as_ref()],
+        bump = profile.bump,
+        has_one = owner @ RouterError::Unauthorized
+    )]
+    pub profile: Account<'info, UserProfile>,
+    
+    pub usdc_mint: Account<'info, Mint>,
 
     #[account(
         init,
@@ -318,7 +359,7 @@ pub struct InitializeProfile<'info> {
         seeds = [b"lock_vault", profile.key().as_ref()],
         bump
     )]
-    pub lock_vault: Box<Account<'info, TokenAccount>>,
+    pub lock_vault: Account<'info, TokenAccount>,
     
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,

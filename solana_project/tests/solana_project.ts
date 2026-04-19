@@ -79,8 +79,28 @@ describe("solana_project", () => {
       .accounts({
         owner: owner.publicKey,
         profile: profilePda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .rpc();
+
+    await program.methods
+      .initializeRouterVault()
+      .accounts({
+        owner: owner.publicKey,
+        profile: profilePda,
         usdcMint: usdcMint,
         routerVault: routerVaultPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
+      })
+      .rpc();
+
+    await program.methods
+      .initializeLockVault()
+      .accounts({
+        owner: owner.publicKey,
+        profile: profilePda,
+        usdcMint: usdcMint,
         lockVault: lockVaultPda,
         systemProgram: anchor.web3.SystemProgram.programId,
         tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
