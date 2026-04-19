@@ -1,0 +1,11 @@
+[package]
+name = "solana_project"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "solana_project"
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+solana-program = "4.0.0"
